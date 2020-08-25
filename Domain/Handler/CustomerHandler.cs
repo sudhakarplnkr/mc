@@ -1,9 +1,10 @@
-﻿namespace CustomerApi.Query
+﻿namespace MicroCredential.Domain.Handler
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using CustomerApi.ViewModels;
+    using MicroCredential.ViewModels;
     using MediatR;
+    using MicroCredential.Domain.Query;
 
     public class CustomerHandler : IRequestHandler<CustomerQuery, CustomerViewModel>
     {

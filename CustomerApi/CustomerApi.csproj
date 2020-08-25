@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>MicroCredential.CustomerApi</AssemblyName>
+    <RootNamespace>MicroCredential.CustomerApi</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MediatR" Version="8.1.0" />

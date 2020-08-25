@@ -1,6 +1,6 @@
-﻿namespace CustomerApi.Query
+﻿namespace MicroCredential.Domain.Query
 {
-    using CustomerApi.ViewModels;
+    using MicroCredential.ViewModels;
     using MediatR;
 
     public class CustomerQuery: IRequest<CustomerViewModel>
