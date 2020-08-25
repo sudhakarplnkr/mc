@@ -1,9 +1,10 @@
-﻿namespace WebApplication1.Controllers
+﻿namespace MicroCredential.CustomerApi.Controllers
 {
     using System.Threading.Tasks;
-    using CustomerApi.Query;
-    using CustomerApi.ViewModels;
+    using GuardAgainstLib;
     using MediatR;
+    using MicroCredential.Domain.Query;
+    using MicroCredential.ViewModels;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]
@@ -20,7 +21,9 @@
         [HttpGet("{id}")]
         public async Task<CustomerViewModel> Get(int id)
         {
-            return await mediator.Send(new CustomerQuery(id)).ConfigureAwait(false);
+            GuardAgainst.ArgumentBeingInvalid(id <= 0, "Invalid customer id");
+
+            return await mediator.Send(new GetCustomerQuery(id)).ConfigureAwait(false);
         }
     }
 }

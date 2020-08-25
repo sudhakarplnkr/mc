@@ -3,9 +3,9 @@
     using MicroCredential.ViewModels;
     using MediatR;
 
-    public class CustomerQuery: IRequest<CustomerViewModel>
+    public class GetCustomerQuery: IRequest<CustomerViewModel>
     {
-       public CustomerQuery(int id)
+       public GetCustomerQuery(int id)
         {
             Id = id;
         }
