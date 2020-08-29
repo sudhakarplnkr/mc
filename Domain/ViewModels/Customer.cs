@@ -1,4 +1,4 @@
-﻿namespace CustomerApi.ViewModels
+﻿namespace MicroCredential.ViewModels
 {
     public class CustomerViewModel
     {

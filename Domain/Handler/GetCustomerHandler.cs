@@ -1,13 +1,14 @@
-﻿namespace CustomerApi.Query
+﻿namespace MicroCredential.Domain.Handler
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using CustomerApi.ViewModels;
+    using MicroCredential.ViewModels;
     using MediatR;
+    using MicroCredential.Domain.Query;
 
-    public class CustomerHandler : IRequestHandler<CustomerQuery, CustomerViewModel>
+    public class GetCustomerHandler : IRequestHandler<GetCustomerQuery, CustomerViewModel>
     {
-        public Task<CustomerViewModel> Handle(CustomerQuery request, CancellationToken cancellationToken)
+        public Task<CustomerViewModel> Handle(GetCustomerQuery request, CancellationToken cancellationToken)
         {
             // TODO: hard code to be removed
             var customerViewModel = new CustomerViewModel

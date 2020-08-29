@@ -2,9 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>MicroCredential.CustomerApi</AssemblyName>
+    <RootNamespace>MicroCredential.CustomerApi</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="GuardAgainst" Version="4.0.4.9" />
     <PackageReference Include="MediatR" Version="8.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 </Project>
