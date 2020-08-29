@@ -1,9 +1,12 @@
+using AutoMapper;
 using FakeItEasy;
 using MicroCredential.Domain.Handler;
 using MicroCredential.Domain.Query;
-using MicroCredential.ViewModels;
+using MicroCredential.Domain.ViewModels;
+using MicroCredential.Infrastructure;
 using Microsoft.VisualStudio.TestPlatform.Common.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,7 +19,7 @@ namespace Domain.Tests
         public async Task GiveGetCustomerQueryWhenHandleThenCustomerDetails()
         {
             // Arrange
-            var handle = new GetCustomerHandler();
+            var handle = new CustomerHandler(A.Fake<ICustomerDatabaseSettings>(), A.Fake<IMapper>());
             var expect = new CustomerViewModel
             {
                 Age = 35,
@@ -27,7 +30,7 @@ namespace Domain.Tests
             };
 
             // Act
-            var response = await handle.Handle(new GetCustomerQuery(1), A.Dummy<CancellationToken>()).ConfigureAwait(false);
+            var response = await handle.Handle(new GetCustomerQuery(Guid.NewGuid()), A.Dummy<CancellationToken>()).ConfigureAwait(false);
 
             // Assert
             Assert.AreEqual(expect.Age, response.Age);

@@ -1,4 +1,6 @@
-﻿namespace MicroCredential.ViewModels
+﻿using System;
+
+namespace MicroCredential.Domain.ViewModels
 {
     public class CustomerViewModel
     {

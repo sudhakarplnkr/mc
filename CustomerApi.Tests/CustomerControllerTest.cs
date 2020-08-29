@@ -18,7 +18,7 @@ namespace MicroCredential.CustomerApi.Tests
             var controller = new CustomerController(A.Fake<IMediator>());
 
             // Act
-            async Task act() => await controller.Get(-1).ConfigureAwait(false);
+            async Task act() => await controller.Get(Guid.Empty).ConfigureAwait(false);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(act);
@@ -32,7 +32,7 @@ namespace MicroCredential.CustomerApi.Tests
             var controller = new CustomerController(mediator);
             
             // Act
-            var response = await controller.Get(1).ConfigureAwait(false);
+            var response = await controller.Get(Guid.NewGuid()).ConfigureAwait(false);
 
             // Assert
             A.CallTo(() => mediator.Send(A<GetCustomerQuery>.Ignored, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();

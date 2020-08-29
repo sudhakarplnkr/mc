@@ -6,4 +6,7 @@
     <RootNamespace>MicroCredential.Infrastructure</RootNamespace>
   </PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="MongoDB.Bson" Version="2.11.1" />
+	</ItemGroup>
 </Project>

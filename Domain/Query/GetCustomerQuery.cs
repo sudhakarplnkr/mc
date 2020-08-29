@@ -1,15 +1,16 @@
 ﻿namespace MicroCredential.Domain.Query
 {
-    using MicroCredential.ViewModels;
+    using MicroCredential.Domain.ViewModels;
     using MediatR;
+    using System;
 
     public class GetCustomerQuery: IRequest<CustomerViewModel>
     {
-       public GetCustomerQuery(int id)
+       public GetCustomerQuery(Guid id)
         {
             Id = id;
         }
 
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 }
