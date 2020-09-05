@@ -1,16 +1,16 @@
 using AutoMapper;
 using FakeItEasy;
+using MicroCredential.Domain;
 using MicroCredential.Domain.Handler;
 using MicroCredential.Domain.Query;
+using MicroCredential.Domain.ViewModels;
 using MicroCredential.Infrastructure;
+using MicroCredential.Infrastructure.Entity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MicroCredential.Infrastructure.Entity;
-using MicroCredential.Domain;
-using MicroCredential.Domain.ViewModels;
 
 namespace Domain.Tests
 {
@@ -21,10 +21,6 @@ namespace Domain.Tests
         public async Task GiveGetCustomerQueryWhenHandleThenCustomerDetails()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<CustomerDbContext>()
-                .UseInMemoryDatabase(databaseName: "customerdatabse")
-                .Options;
-            var context = new CustomerDbContext(options);
             var expect = new Customer
             {
                 Age = 35,
@@ -39,9 +35,9 @@ namespace Domain.Tests
                 cfg.AddProfile(new CustomerProfile());
             });
             var mapper = mockMapper.CreateMapper();
-            context.Customers.Add(expect);
-            context.SaveChanges();
-            var handle = new CustomerHandler(mapper, context);
+            var redis = A.Fake<ICustomerRedisContext>();
+            A.CallTo(() => redis.Customers).Returns(new List<Customer> { expect });
+            var handle = new CustomerHandler(mapper, redis);
 
             // Act
             var response = await handle.Handle(new GetCustomerRequest(expect.CustomerId), A.Dummy<CancellationToken>()).ConfigureAwait(false);
@@ -54,31 +50,19 @@ namespace Domain.Tests
         public async Task GiveCustomerWhenHandleThenCustomerToBeAdded()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<CustomerDbContext>()
-                .UseInMemoryDatabase(databaseName: "customerdatabse")
-                .Options;
-            var context = new CustomerDbContext(options);
-            var customerViewModel = new CustomerViewModel
-            {
-                Age = 35,
-                City = "Chennai",
-                Country = "India",
-                Name = "Mark",
-                State = "Tamil Nadu",
-            };
             var mockMapper = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new CustomerProfile());
             });
             var mapper = mockMapper.CreateMapper();
-            context.SaveChanges();
-            var handle = new CustomerHandler(mapper, context);
+            var redis = A.Fake<ICustomerRedisContext>();
+            var handle = new CustomerHandler(mapper, redis);
 
             // Act
-            var response = await handle.Handle(new CreateCustomerRequest(customerViewModel), A.Dummy<CancellationToken>()).ConfigureAwait(false);
+            var response = await handle.Handle(new CreateCustomerRequest(new CustomerViewModel()), A.Dummy<CancellationToken>()).ConfigureAwait(false);
 
             // Assert
-            Assert.AreEqual(true, response);
+            A.CallTo(() => redis.SetCustomer(A<Customer>.Ignored)).MustHaveHappenedOnceExactly();
         }
     }
 }

@@ -23,9 +23,18 @@ namespace MicroCredential.CustomerApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            this.Configuration = new ConfigurationBuilder()
+#if DEBUG
+                .AddJsonFile("appsettings.Development.json")
+#else
+                .AddJsonFile("appsettings.json")
+#endif
+                .Build();
             services.AddMediatR(Assembly.Load("MicroCredential.Domain"));
             services.AddAutoMapper(Assembly.Load("MicroCredential.Domain"));
-            services.AddDbContext<CustomerDbContext>(options => options.UseSqlServer(Configuration["ConnectionString:CustomerConnection"]));
+            services.AddDbContext<CustomerDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CustomerConnection")));
+            services.AddTransient<IRedisContext>(s=> new RedisContext(Configuration.GetConnectionString("RedisConnection")));
+            services.AddTransient<ICustomerRedisContext, CustomerRedisContext>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroCredential - Customer Api", Version = "v1" });

@@ -14,25 +14,25 @@
                                    IRequestHandler<CreateCustomerRequest, bool>
     {
         private readonly IMapper mapper;
-        private readonly CustomerDbContext customerDbContext;
+        private readonly ICustomerRedisContext customerRedisContext;
 
-        public CustomerHandler(IMapper mapper, CustomerDbContext dbContext)
+        public CustomerHandler(IMapper mapper, ICustomerRedisContext customerRedisContext)
         {
             this.mapper = mapper;
-            this.customerDbContext = dbContext;
+            this.customerRedisContext = customerRedisContext;
         }
 
-        public Task<CustomerViewModel> Handle(GetCustomerRequest request, CancellationToken cancellationToken)
+        public async Task<CustomerViewModel> Handle(GetCustomerRequest request, CancellationToken cancellationToken)
         {
-            var customerDetail = customerDbContext.Customers.FirstOrDefault(u => u.CustomerId == request.Id);
-            return Task.Run(() => mapper.Map<CustomerViewModel>(customerDetail));
+            var customerDetail = customerRedisContext.Customers.FirstOrDefault(u => u.CustomerId == request.Id);
+            var viewModel = mapper.Map<CustomerViewModel>(customerDetail);
+            return await Task.Run(() => viewModel);
         }
 
         public async Task<bool> Handle(CreateCustomerRequest request, CancellationToken cancellationToken)
         { 
             var customerDetail = mapper.Map<Customer>(request.CustomerViewModel);
-            await customerDbContext.Customers.AddAsync(customerDetail).ConfigureAwait(false);
-            return await customerDbContext.SaveChangesAsync().ConfigureAwait(false) > 0;
+            return await Task.Run(() => customerRedisContext.SetCustomer(customerDetail));
         }
     }
 }

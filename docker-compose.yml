@@ -11,6 +11,9 @@ services:
       - 52111:52111
     depends_on:
       - customerdb
+      - redis_image
+    links:
+      - redis_image
   customerdb:
      image: "mcr.microsoft.com/mssql/server"
      environment:
@@ -18,3 +21,6 @@ services:
         ACCEPT_EULA: "Y"
      ports:
       - 1433:1433
+  redis_image:
+    image: redis
+    container_name: redis.cache
