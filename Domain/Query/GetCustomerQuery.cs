@@ -4,9 +4,9 @@
     using MediatR;
     using System;
 
-    public class GetCustomerQuery: IRequest<CustomerViewModel>
+    public class GetCustomerRequest: IRequest<CustomerViewModel>
     {
-       public GetCustomerQuery(Guid id)
+       public GetCustomerRequest(Guid id)
         {
             Id = id;
         }

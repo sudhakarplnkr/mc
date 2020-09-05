@@ -24,7 +24,7 @@
         {
             GuardAgainst.ArgumentBeingEmpty(customerId, "Invalid customer id");
 
-            return await mediator.Send(new GetCustomerQuery(customerId)).ConfigureAwait(false);
+            return await mediator.Send(new GetCustomerRequest(customerId)).ConfigureAwait(false);
         }
 
         [HttpPost]

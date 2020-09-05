@@ -2,13 +2,15 @@ using AutoMapper;
 using FakeItEasy;
 using MicroCredential.Domain.Handler;
 using MicroCredential.Domain.Query;
-using MicroCredential.Domain.ViewModels;
 using MicroCredential.Infrastructure;
-using Microsoft.VisualStudio.TestPlatform.Common.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using MicroCredential.Infrastructure.Entity;
+using MicroCredential.Domain;
+using MicroCredential.Domain.ViewModels;
 
 namespace Domain.Tests
 {
@@ -19,8 +21,44 @@ namespace Domain.Tests
         public async Task GiveGetCustomerQueryWhenHandleThenCustomerDetails()
         {
             // Arrange
-            var handle = new CustomerHandler(A.Fake<ICustomerDatabaseSettings>(), A.Fake<IMapper>());
-            var expect = new CustomerViewModel
+            var options = new DbContextOptionsBuilder<CustomerDbContext>()
+                .UseInMemoryDatabase(databaseName: "customerdatabse")
+                .Options;
+            var context = new CustomerDbContext(options);
+            var expect = new Customer
+            {
+                Age = 35,
+                City = "Chennai",
+                Country = "India",
+                Name = "Mark",
+                State = "Tamil Nadu",
+                CustomerId = Guid.NewGuid(),
+            };
+            var mockMapper = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new CustomerProfile());
+            });
+            var mapper = mockMapper.CreateMapper();
+            context.Customers.Add(expect);
+            context.SaveChanges();
+            var handle = new CustomerHandler(mapper, context);
+
+            // Act
+            var response = await handle.Handle(new GetCustomerRequest(expect.CustomerId), A.Dummy<CancellationToken>()).ConfigureAwait(false);
+
+            // Assert
+            Assert.AreEqual(35, response.Age);
+        }
+
+        [TestMethod]
+        public async Task GiveCustomerWhenHandleThenCustomerToBeAdded()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<CustomerDbContext>()
+                .UseInMemoryDatabase(databaseName: "customerdatabse")
+                .Options;
+            var context = new CustomerDbContext(options);
+            var customerViewModel = new CustomerViewModel
             {
                 Age = 35,
                 City = "Chennai",
@@ -28,12 +66,19 @@ namespace Domain.Tests
                 Name = "Mark",
                 State = "Tamil Nadu",
             };
+            var mockMapper = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new CustomerProfile());
+            });
+            var mapper = mockMapper.CreateMapper();
+            context.SaveChanges();
+            var handle = new CustomerHandler(mapper, context);
 
             // Act
-            var response = await handle.Handle(new GetCustomerQuery(Guid.NewGuid()), A.Dummy<CancellationToken>()).ConfigureAwait(false);
+            var response = await handle.Handle(new CreateCustomerRequest(customerViewModel), A.Dummy<CancellationToken>()).ConfigureAwait(false);
 
             // Assert
-            Assert.AreEqual(expect.Age, response.Age);
+            Assert.AreEqual(true, response);
         }
     }
 }

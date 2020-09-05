@@ -1,4 +1,4 @@
-namespace MicroCredential
+namespace MicroCredential.CustomerApi
 {
     using AutoMapper;
     using MediatR;
@@ -8,13 +8,12 @@ namespace MicroCredential
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Options;
     using System.Reflection;
     using Microsoft.OpenApi.Models;
+    using Microsoft.EntityFrameworkCore;
 
     public class Startup
     {
-
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
@@ -26,11 +25,10 @@ namespace MicroCredential
         {
             services.AddMediatR(Assembly.Load("MicroCredential.Domain"));
             services.AddAutoMapper(Assembly.Load("MicroCredential.Domain"));
-            services.Configure<CustomerDatabaseSettings>(Configuration.GetSection(nameof(CustomerDatabaseSettings)));
-            services.AddSingleton<ICustomerDatabaseSettings>(sp => sp.GetRequiredService<IOptions<CustomerDatabaseSettings>>().Value);
+            services.AddDbContext<CustomerDbContext>(options => options.UseSqlServer(Configuration["ConnectionString:CustomerConnection"]));
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroServices - Authentication Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroCredential - Customer Api", Version = "v1" });
             });
             services.AddControllers();
         }
@@ -46,7 +44,7 @@ namespace MicroCredential
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Service");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Service");
             });
 
             app.UseEndpoints(endpoints =>

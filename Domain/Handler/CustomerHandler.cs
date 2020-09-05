@@ -6,37 +6,33 @@
     using MediatR;
     using MicroCredential.Domain.Query;
     using MicroCredential.Infrastructure.Entity;
-    using MongoDB.Driver;
     using MicroCredential.Infrastructure;
     using AutoMapper;
-    using System;
+    using System.Linq;
 
-    public class CustomerHandler : IRequestHandler<GetCustomerQuery, CustomerViewModel>, 
+    public class CustomerHandler : IRequestHandler<GetCustomerRequest, CustomerViewModel>,
                                    IRequestHandler<CreateCustomerRequest, bool>
     {
-        private readonly IMongoCollection<Customer> customer;
         private readonly IMapper mapper;
+        private readonly CustomerDbContext customerDbContext;
 
-        public CustomerHandler(ICustomerDatabaseSettings settings, IMapper mapper)
+        public CustomerHandler(IMapper mapper, CustomerDbContext dbContext)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
-
-            customer = database.GetCollection<Customer>(settings.CustomerCollectionName);
             this.mapper = mapper;
+            this.customerDbContext = dbContext;
         }
 
-        public Task<CustomerViewModel> Handle(GetCustomerQuery request, CancellationToken cancellationToken)
+        public Task<CustomerViewModel> Handle(GetCustomerRequest request, CancellationToken cancellationToken)
         {
-            var customerDetail = customer.Find<Customer>(u => u.CustomerId == request.Id).FirstOrDefault();
+            var customerDetail = customerDbContext.Customers.FirstOrDefault(u => u.CustomerId == request.Id);
             return Task.Run(() => mapper.Map<CustomerViewModel>(customerDetail));
         }
 
-        public Task<bool> Handle(CreateCustomerRequest request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CreateCustomerRequest request, CancellationToken cancellationToken)
         { 
             var customerDetail = mapper.Map<Customer>(request.CustomerViewModel);
-            customer.InsertOne(customerDetail);
-            return Task.FromResult(true);
+            await customerDbContext.Customers.AddAsync(customerDetail).ConfigureAwait(false);
+            return await customerDbContext.SaveChangesAsync().ConfigureAwait(false) > 0;
         }
     }
 }
