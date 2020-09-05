@@ -60,6 +60,14 @@ namespace MicroCredential.CustomerApi
             {
                 endpoints.MapControllers();
             });
+            ConfigureDatabase(app);
+        }
+
+        private void ConfigureDatabase(IApplicationBuilder app)
+        {
+            using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+            var context = serviceScope.ServiceProvider.GetRequiredService<CustomerDbContext>();
+            context.Database.EnsureCreated();
         }
     }
 }
