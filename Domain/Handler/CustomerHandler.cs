@@ -8,7 +8,6 @@
     using MicroCredential.Infrastructure.Entity;
     using MicroCredential.Infrastructure;
     using AutoMapper;
-    using System.Linq;
 
     public class CustomerHandler : IRequestHandler<GetCustomerRequest, CustomerViewModel>,
                                    IRequestHandler<CreateCustomerRequest, bool>
@@ -24,7 +23,7 @@
 
         public async Task<CustomerViewModel> Handle(GetCustomerRequest request, CancellationToken cancellationToken)
         {
-            var customerDetail = customerRedisContext.Customers.FirstOrDefault(u => u.CustomerId == request.Id);
+            var customerDetail = customerRedisContext.GetCustomer(request.Id);
             var viewModel = mapper.Map<CustomerViewModel>(customerDetail);
             return await Task.Run(() => viewModel);
         }

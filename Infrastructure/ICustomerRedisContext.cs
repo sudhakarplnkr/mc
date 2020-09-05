@@ -1,13 +1,11 @@
 ﻿namespace MicroCredential.Infrastructure
 {
     using MicroCredential.Infrastructure.Entity;
-    using System.Collections.Generic;
+    using System;
 
     public interface ICustomerRedisContext
     {
-        List<Customer> Customers { get; set; }
-
-        bool SetCustomer(List<Customer> customers);
+        Customer GetCustomer(Guid customerId);
 
         bool SetCustomer(Customer customer);
     }

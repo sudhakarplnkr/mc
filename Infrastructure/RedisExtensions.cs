@@ -1,15 +1,14 @@
 ﻿namespace MicroCredential.Infrastructure
 {
+    using Microsoft.Extensions.Caching.Distributed;
     using Newtonsoft.Json;
-    using StackExchange.Redis;
-    using System;
 
     public static class RedisExtensions
     {
-        public static T Get<T>(this IDatabase cache, string key)
+        public static T Get<T>(this IDistributedCache cache, string key)
         {
-            var value = cache.StringGet(key);
-            if (value.IsNull)
+            var value = cache.GetString(key);
+            if (string.IsNullOrEmpty(value))
             {
                 return default;
             }
@@ -17,9 +16,9 @@
             return JsonConvert.DeserializeObject<T>(value);
         }
 
-        public static void Set(this IDatabase cache, string key, object value, TimeSpan experation)
+        public static void Set(this IDistributedCache cache, string key, object value)
         {
-            cache.StringSet(key, JsonConvert.SerializeObject(value), experation);
+            cache.SetString(key, JsonConvert.SerializeObject(value));
         }
     }
 }

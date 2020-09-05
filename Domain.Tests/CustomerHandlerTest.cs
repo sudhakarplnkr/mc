@@ -36,7 +36,7 @@ namespace Domain.Tests
             });
             var mapper = mockMapper.CreateMapper();
             var redis = A.Fake<ICustomerRedisContext>();
-            A.CallTo(() => redis.Customers).Returns(new List<Customer> { expect });
+            A.CallTo(() => redis.GetCustomer(expect.CustomerId)).Returns(expect);
             var handle = new CustomerHandler(mapper, redis);
 
             // Act

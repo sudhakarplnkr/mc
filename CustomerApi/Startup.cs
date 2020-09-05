@@ -33,12 +33,18 @@ namespace MicroCredential.CustomerApi
             services.AddMediatR(Assembly.Load("MicroCredential.Domain"));
             services.AddAutoMapper(Assembly.Load("MicroCredential.Domain"));
             services.AddDbContext<CustomerDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CustomerConnection")));
-            services.AddTransient<IRedisContext>(s=> new RedisContext(Configuration.GetConnectionString("RedisConnection")));
             services.AddTransient<ICustomerRedisContext, CustomerRedisContext>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroCredential - Customer Api", Version = "v1" });
             });
+
+            services.AddDistributedRedisCache(options => {
+                options.Configuration = Configuration.GetConnectionString("RedisConnection");
+                options.InstanceName = "Customer_";
+            });
+            services.AddSession();
+
             services.AddControllers();
         }
 
