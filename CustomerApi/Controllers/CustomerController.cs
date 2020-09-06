@@ -23,7 +23,6 @@
         public async Task<CustomerViewModel> Get(Guid customerId)
         {
             GuardAgainst.ArgumentBeingEmpty(customerId, "Invalid customer id");
-
             return await mediator.Send(new GetCustomerRequest(customerId)).ConfigureAwait(false);
         }
 
@@ -31,7 +30,6 @@
         public async Task<bool> Post(CustomerViewModel customerViewModel)
         {
             GuardAgainst.ArgumentBeingNull(customerViewModel, "customer detail can't be null");
-
             return await mediator.Send(new CreateCustomerRequest(customerViewModel)).ConfigureAwait(false);
         }
     }

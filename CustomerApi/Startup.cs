@@ -11,6 +11,7 @@ namespace MicroCredential.CustomerApi
     using System.Reflection;
     using Microsoft.OpenApi.Models;
     using Microsoft.EntityFrameworkCore;
+    using System;
 
     public class Startup
     {
@@ -32,7 +33,10 @@ namespace MicroCredential.CustomerApi
                 .Build();
             services.AddMediatR(Assembly.Load("MicroCredential.Domain"));
             services.AddAutoMapper(Assembly.Load("MicroCredential.Domain"));
-            services.AddDbContext<CustomerDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CustomerConnection")));
+            services.AddDbContext<CustomerDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CustomerConnection"), builder =>
+            {
+                builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            }));
             services.AddTransient<ICustomerRedisContext, CustomerRedisContext>();
             services.AddSwaggerGen(c =>
             {

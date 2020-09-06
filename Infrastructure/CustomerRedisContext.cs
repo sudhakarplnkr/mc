@@ -3,8 +3,6 @@
     using MicroCredential.Infrastructure.Entity;
     using Microsoft.Extensions.Caching.Distributed;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class CustomerRedisContext : ICustomerRedisContext
     {
