@@ -6,18 +6,16 @@ using MicroCredential.Domain.Query;
 using MicroCredential.Domain.ViewModels;
 using MicroCredential.Infrastructure;
 using MicroCredential.Infrastructure.Entity;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Domain.Tests
 {
-    [TestClass]
     public class CustomerHandlerTest
     {
-        [TestMethod]
+        [Fact]
         public async Task GiveGetCustomerQueryWhenHandleThenCustomerDetails()
         {
             // Arrange
@@ -43,10 +41,10 @@ namespace Domain.Tests
             var response = await handle.Handle(new GetCustomerRequest(expect.CustomerId), A.Dummy<CancellationToken>()).ConfigureAwait(false);
 
             // Assert
-            Assert.AreEqual(35, response.Age);
+            Assert.Equal(35, response.Age);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task GiveCustomerWhenHandleThenCustomerToBeAdded()
         {
             // Arrange
@@ -63,6 +61,25 @@ namespace Domain.Tests
 
             // Assert
             A.CallTo(() => redis.SetCustomer(A<Customer>.Ignored)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public async Task GiveNullCustomerWhenHandleThenThrowException()
+        {
+            // Arrange
+            var mockMapper = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new CustomerProfile());
+            });
+            var mapper = mockMapper.CreateMapper();
+            var redis = A.Fake<ICustomerRedisContext>();
+            var handle = new CustomerHandler(mapper, redis);
+
+            // Act
+            Task act = handle.Handle(null as CreateCustomerRequest, A.Dummy<CancellationToken>());
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(() => act);
         }
     }
 }
