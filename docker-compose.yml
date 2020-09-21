@@ -1,15 +1,15 @@
-version: '3.3'
+version: '3.8'
 
 services:
   mccustomerapi:
-    image: sudhakarsho1/customerapi:lbv1
+    image: customerapi
     depends_on:
       - customerdb
       - redis_image
     links:
       - redis_image
   mcproxy:
-    image: sudhakarsho1/mcproxy:lbv1
+    image: mcproxy
     container_name: mcproxy
     ports:
       - 52115:52115

@@ -1,0 +1,20 @@
+version: '3.8'
+networks:
+  mcnetwork:
+services:
+    customerapi:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      image: customerapi
+      ports:
+        - 80
+      networks: 
+        - mcnetwork
+    mcproxy:
+      build:
+        context: .
+        dockerfile: ./nginx/Dockerfile
+      image: mcproxy
+      ports:
+        - 52115:52115
