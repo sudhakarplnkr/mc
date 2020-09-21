@@ -1,25 +1,26 @@
-# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
-version: '3.8'
+version: '3.3'
 
 services:
-  customerapi:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: customerapi
-    ports:
-      - 52111:52111
+  mccustomerapi:
+    image: sudhakarsho1/customerapi:lbv1
+    deploy:
+      replicas: 4
     depends_on:
       - customerdb
       - redis_image
     links:
       - redis_image
+  mcproxy:
+    image: sudhakarsho1/mcproxy:lbv1
+    container_name: mcproxy
+    ports:
+      - 52115:52115
   customerdb:
-     image: "mcr.microsoft.com/mssql/server"
-     environment:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
         SA_PASSWORD: "Sqlserver@123"
         ACCEPT_EULA: "Y"
-     ports:
+    ports:
       - 1433:1433
   redis_image:
     image: redis
